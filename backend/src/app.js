@@ -1,7 +1,4 @@
 // configura o Express, middlewares e rotas
-import dotenv from "dotenv";
-dotenv.config();
-
 import express from "express";
 import cors from "cors";
 
@@ -13,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// passando as rotas
-app.use("/", authRoutes);
+// Monta todas as rotas do authRoutes com o prefixo /api/auth
+app.use("/api/auth", authRoutes);
 
 export default app;
