@@ -9,3 +9,8 @@ export const registerSchema = z.object({
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
   name: z.string().optional(),
 });
+
+export const loginSchema = z.object({
+  identifier: z.string().nonempty("Identifier é obrigatório"),
+  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+});
