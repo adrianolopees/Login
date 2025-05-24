@@ -86,6 +86,7 @@ export const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Senha inválida" });
     }
+    console.log("Usuário logado:", user.username);
 
     const token = jwt.sign(
       { id: user.id, username: user.username, isAdimin: user.isAdmin },
@@ -94,7 +95,6 @@ export const login = async (req, res) => {
         expiresIn: "1h",
       }
     );
-
     res.json({ message: "Login bem-sucedido!", token });
   } catch (error) {
     res
