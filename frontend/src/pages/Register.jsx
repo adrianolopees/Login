@@ -1,6 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
+import "react-toastify/dist/ReactToastify.css";
+import GradientButton from "../components/GradientButton";
+import { FaUserPlus } from "react-icons/fa";
 
 function Register() {
   const navigate = useNavigate();
@@ -10,7 +15,9 @@ function Register() {
     password: "",
     name: "",
   });
-  const [error, setError] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // adicionando erro
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -18,18 +25,32 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
+    setError(""); // limpa erro anterior, se houver
 
     try {
       await axios.post("http://localhost:5000/api/auth/register", form);
-      navigate("/login"); // redireciona para o login depois de registrar
+      toast.success("Cadastro feito com sucesso!");
+
+      // Redireciona sem delay, como no seu exemplo que funcionava
+      navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Erro ao registrar.");
+      const msg = err.response?.data?.message || "Erro ao registrar.";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4">
+    <motion.div
+      className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+    >
       <h2 className="text-2xl font-bold mb-4">Crie sua conta</h2>
 
       {error && <p className="text-red-500 mb-2">{error}</p>}
@@ -74,14 +95,17 @@ function Register() {
           className="p-2 border rounded"
         />
 
-        <button
+        <GradientButton
           type="submit"
-          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          loading={loading}
+          disabled={loading}
+          icon={<FaUserPlus />}
         >
           Registrar
-        </button>
+        </GradientButton>
       </form>
-    </div>
+      <ToastContainer />
+    </motion.div>
   );
 }
 

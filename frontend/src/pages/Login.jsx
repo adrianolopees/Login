@@ -3,17 +3,18 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-// Import para feedback
+// Import para feedback e animações
 import { toast, ToastContainer } from "react-toastify";
 import { motion } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
+import GradientButton from "../components/GradientButton";
+import { FaUser } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
 
-  // estado para armazenar os dados do form
   const [form, setForm] = useState({
-    identifier: "", // no backend ele identifica se é email ou username
+    identifier: "",
     password: "",
   });
 
@@ -38,7 +39,6 @@ function Login() {
       localStorage.setItem("token", token);
 
       toast.success("Login feito com sucesso!");
-
       setTimeout(() => {
         navigate("/profile");
       }, 2000);
@@ -54,6 +54,8 @@ function Login() {
       className="min-h-screen flex flex-col justify-center items-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
     >
       <h1 className="text-2xl font-bold mb-4">Entrar no TrackMe</h1>
 
@@ -79,20 +81,15 @@ function Login() {
           className="bg-gray-100 p-2 border-none rounded outline-none"
           required
         />
-        <button
+        <GradientButton
           type="submit"
-          className="bg-blue-500 text-white p-3 rounded hover:bg-blue-600 flex items-center justify-center h-12 min-w-[120px]"
+          loading={loading}
           disabled={loading}
+          icon={<FaUser />}
+          loadingText="Entrando..."
         >
-          {loading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-              <span>Entrando...</span>
-            </>
-          ) : (
-            <span>Entrar</span>
-          )}
-        </button>
+          Entrar
+        </GradientButton>
       </form>
 
       <p className="mt-4 text-sm">
