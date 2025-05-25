@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+// Import para feedback
+import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
+import "react-toastify/dist/ReactToastify.css";
+
 function Login() {
   const navigate = useNavigate();
 
@@ -12,7 +17,7 @@ function Login() {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // atualiza os estados conforme o tonto digita
   const handleChange = (e) => {
@@ -22,7 +27,7 @@ function Login() {
   // ao enviar essa merda
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -31,16 +36,26 @@ function Login() {
       );
       const token = res.data.token;
       localStorage.setItem("token", token);
-      navigate("/profile");
+
+      toast.success("Login feito com sucesso!");
+
+      setTimeout(() => {
+        navigate("/profile");
+      }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || "Erro ao fazer login");
+      toast.error(err.response?.data?.message || "Erro ao fazer login");
+    } finally {
+      setLoading(false);
     }
   };
-  return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4">
-      <h1 className="text-2xl font-bold mb-4">Entrar no TrackMe</h1>
 
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+  return (
+    <motion.div
+      className="min-h-screen flex flex-col justify-center items-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <h1 className="text-2xl font-bold mb-4">Entrar no TrackMe</h1>
 
       <form
         className="w-full max-w-sm flex flex-col gap-4"
@@ -66,9 +81,17 @@ function Login() {
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white p-3 rounded hover:bg-blue-600 flex items-center justify-center h-12 min-w-[120px]"
+          disabled={loading}
         >
-          Entrar
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <span>Entrando...</span>
+            </>
+          ) : (
+            <span>Entrar</span>
+          )}
         </button>
       </form>
 
@@ -78,7 +101,8 @@ function Login() {
           Cadastre-se
         </Link>
       </p>
-    </div>
+      <ToastContainer />
+    </motion.div>
   );
 }
 
